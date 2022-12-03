@@ -27,5 +27,13 @@ namespace Antoids
             f /= v.Length();
             return v * (float)f;
         }
+
+        public static float AngleBetween(Vector2 vector1, Vector2 vector2)
+        {
+            float sin = vector1.X * vector2.Y - vector2.Y * vector1.Y;
+            float cos = vector1.X * vector2.Y + vector1.Y * vector2.Y;
+
+            return (float)Math.Atan2(sin, cos); ;
+        }
     }
 }

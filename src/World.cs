@@ -4,21 +4,43 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using static System.Formats.Asn1.AsnWriter;
+using System.Linq;
 
 namespace Antoids
 {
+    public class Food
+    {
+        public Vector2 position;
+        public bool willBeRemoved;
+        public Food(Vector2 _position)
+        {
+            position = _position;
+        }
+    }
+
+    public struct Pheromone
+    {
+        public Vector2 position;
+        public float strength = 0.0f;
+        public Pheromone(Vector2 _position)
+        {
+            position = _position;
+        }
+    }
+
     public static class World
     {
-        public const int worldWidth = 800;
-        public const int worldHeight = 480;
+        public const float worldWidth = 800.0f / 30.0f;
+        public const float worldHeight = 480.0f / 30.0f;
 
         public static Texture2D circleTexture;
 
         private static List<Ant> ants = new List<Ant>();
-        public static List<Vector2> food = new List<Vector2>();
-        public static List<Vector2> foodPheromones = new List<Vector2>();
-        public static List<Vector2> homePheromones = new List<Vector2>();
+
+        public static List<Food> foods = new List<Food>();
+
+        public static List<Pheromone> foodPheromones = new List<Pheromone>();
+        public static List<Pheromone> homePheromones = new List<Pheromone>();
 
         private const int antCount = 20;
         public static Vector2 nestPosition = new Vector2(worldWidth / 2, worldHeight / 2);
@@ -31,9 +53,10 @@ namespace Antoids
             }
 
             Random random = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++)
             {
-                food.Add(new Vector2((float)random.NextDouble() * worldWidth, (float)random.NextDouble() * worldHeight));
+                Vector2 foodPosition = new Vector2((float)random.NextDouble() * worldWidth, (float)random.NextDouble() * worldHeight);
+                foods.Add(new Food(foodPosition));
             }
         }
 
@@ -43,30 +66,39 @@ namespace Antoids
             {
                 ant.Update(deltaTime);
             }
+
+            foods = foods.Where(food => !food.willBeRemoved).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
             foreach (Ant ant in ants)
             {
-                ant.Draw(spriteBatch);
+                ant.Draw(spriteBatch);                
             }
 
-            foreach (Vector2 foodPosition in food)
+            foreach (Food food in foods)
             {
-                spriteBatch.Draw
-                (
-                    circleTexture,
-                    foodPosition * Simulation.windowScale,
-                    circleTexture.Bounds,
-                    Color.GreenYellow,
-                    0.0f,
-                    new Vector2(circleTexture.Width / 2, circleTexture.Height / 2),
-                    0.1f * Simulation.windowScale,
-                    SpriteEffects.None,
-                    0.0f
-                );
+                DrawCircle(spriteBatch, food.position, Color.YellowGreen, 0.15f);
             }
+
+            DrawCircle(spriteBatch, nestPosition, Color.Brown, 1.5f);
+        }
+
+        public static void DrawCircle(SpriteBatch spriteBatch, Vector2 position, Color color, float scale)
+        {
+            spriteBatch.Draw
+            (
+                circleTexture,
+                position * Simulation.windowScale,
+                circleTexture.Bounds,
+                color,
+                0.0f,
+                new Vector2(circleTexture.Width / 2, circleTexture.Height / 2),
+                scale * Simulation.windowScale / World.circleTexture.Width,
+                SpriteEffects.None,
+                0.0f
+            );
         }
     }
 }

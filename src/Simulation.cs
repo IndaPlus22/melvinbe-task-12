@@ -9,7 +9,7 @@ namespace Antoids
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-        public const float windowScale = 3.0f;
+        public const float windowScale = 100.0f;
         public const int windowWidth = (int)(World.worldWidth * windowScale);
         public const int windowHeight = (int)(World.worldHeight * windowScale);
 
