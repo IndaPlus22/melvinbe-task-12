@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Antoids
@@ -28,12 +29,10 @@ namespace Antoids
             return v * (float)f;
         }
 
-        public static float AngleBetween(Vector2 vector1, Vector2 vector2)
+        public static float InterpolateCosine(float a, float b, float x)
         {
-            float sin = vector1.X * vector2.Y - vector2.Y * vector1.Y;
-            float cos = vector1.X * vector2.Y + vector1.Y * vector2.Y;
-
-            return (float)Math.Atan2(sin, cos); ;
+            float f = (1.0f - (float)Math.Cos(x * (float)Math.PI)) / 2.0f;
+            return a * (1.0f - f) + b * f;
         }
     }
 }

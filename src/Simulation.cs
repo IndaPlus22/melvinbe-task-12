@@ -7,6 +7,7 @@ namespace Antoids
     public class Simulation : Game
     {
         private GraphicsDeviceManager graphics;
+        private GraphicsDevice graphicsDevice;
         private SpriteBatch spriteBatch;
 
         public const float windowScale = 60.0f;
@@ -20,13 +21,15 @@ namespace Antoids
             IsMouseVisible = true;
 
             graphics.PreferredBackBufferWidth = windowWidth;
-            graphics.PreferredBackBufferHeight = windowHeight;   
+            graphics.PreferredBackBufferHeight = windowHeight;
             graphics.ApplyChanges();
         }
 
         protected override void Initialize()
         {
             World.Init();
+
+            Terrain.Init(GraphicsDevice);
 
             base.Initialize();
         }
@@ -60,6 +63,8 @@ namespace Antoids
             World.Draw(spriteBatch);
 
             spriteBatch.End();
+
+            Terrain.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

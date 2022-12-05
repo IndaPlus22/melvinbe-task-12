@@ -11,7 +11,7 @@ namespace Antoids
     {
         public Vector2 position;
 
-        public const float maxStength = 15.0f;
+        public const float maxStength = 24.0f;
         public float strength = maxStength;
 
         public Pheromone(Vector2 _position)
@@ -24,30 +24,30 @@ namespace Antoids
     {
         public static Texture2D texture;
 
-        private static Random random = new Random();
+        private const float maxSpeed = 2.5f;
+        private const float steerStrength = 2.5f;
+        private const float wanderStrength = 0.25f;
 
-        private const float maxSpeed = 1.8f;
-        private const float steerStrength = 2.3f;
-        private const float wanderStrength = 0.12f;
+        private const float foodViewRange = 1.5f;
+        private const float nestViewRange = 4.0f;
+        private const float pickUpRange = 0.15f;
 
-        private const float foodViewRange = 1.3f;
-        private const float nestViewRange = 2.0f;
-        private const float pickUpRange = 0.07f;
+        private const float sensorRadius = 0.1f;
+        private const float sensorDistance = 1.8f;
+        private const float sensorAngle = (float)Math.PI / 9.0f;
 
         public Vector2 position;
-        private Vector2 velocity = Vector2.One;
+        private Vector2 velocity;
         private Vector2 desiredDirection;
         public float rotation;
 
         private Food targetFood;
         private bool hasFood;
 
+        private const float pheromoneSpacing = 0.6f;
         private Vector2 lastPheromonePosition;
-        private const float pheromoneSpacing = 0.25f;
 
-        private const float sensorRadius = 0.4f;
-        private const float sensorDistance = 0.5f;
-        private const float sensorAngle = (float)Math.PI / 4.0f;
+        private Vector2[] sensPoses = new Vector2[3];
 
         public Ant(Vector2 _position, Vector2 _velocity)
         {
@@ -68,6 +68,18 @@ namespace Antoids
 
             if (targetFood == null) 
                 SmellPheromones();
+
+            //*
+            foreach (Ant ant in World.ants)
+            {
+                if (Vector2.Distance(position, ant.position) <= 0.15f && position != ant.position)
+                {
+                    Vector2 direction = position - ant.position;
+                    direction.Normalize();
+                    velocity += direction * 5.0f * deltaTime;
+                }
+            }
+            //*/
         }
 
         private void Move(float deltaTime)
@@ -89,35 +101,39 @@ namespace Antoids
 
         private void FindFood()
         {
-            if (targetFood == null)
+            float distance = float.PositiveInfinity;
+            foreach (Food food in World.foods)
             {
-                List<Food> foodInView = new List<Food>();
-                foreach (Food food in World.foods)
+                float dist = Vector2.Distance(position, food.position);
+                if (dist < foodViewRange &&
+                    dist < distance &&
+                    !food.willBeRemoved)
                 {
-                    if (Vector2.Distance(position, food.position) < foodViewRange &&
-                        !food.willBeRemoved)
+                    distance = dist;
+                    targetFood = food;
+                }
+            }
+
+            if (targetFood != null)
+            {
+                if (!targetFood.willBeRemoved)
+                {
+                    desiredDirection = targetFood.position - position;
+                    desiredDirection.Normalize();
+
+                    if (Vector2.Distance(position, targetFood.position) < pickUpRange)
                     {
-                        targetFood = food;
-                        break;
+                        targetFood.willBeRemoved = true;
+                        hasFood = true;
+                        targetFood = null;
+                        desiredDirection = -desiredDirection;
+                        velocity = -velocity * 0.5f;
                     }
                 }
-            }
-            else if (!targetFood.willBeRemoved)
-            {
-                desiredDirection = targetFood.position - position;
-                desiredDirection.Normalize();
-
-                if (Vector2.Distance(position, targetFood.position) < pickUpRange)
+                else
                 {
-                    targetFood.willBeRemoved = true;
-                    hasFood = true;
                     targetFood = null;
-                    desiredDirection = -desiredDirection;
                 }
-            }
-            else
-            {
-                targetFood = null;
             }
         }
 
@@ -128,7 +144,7 @@ namespace Antoids
                 desiredDirection = World.nestPosition - position;
                 desiredDirection.Normalize();
 
-                if (Vector2.Distance(position, World.nestPosition) < 0.5f)
+                if (Vector2.Distance(position, World.nestPosition) < 1.0f)
                 {
                     hasFood = false;
                     desiredDirection = -desiredDirection;
@@ -141,13 +157,21 @@ namespace Antoids
         {
             if (Vector2.Distance(position, lastPheromonePosition) > pheromoneSpacing)
             {
+                int x = (int)(position.X / 2.0f);
+                int y = (int)(position.Y / 2.0f);
                 if (hasFood)
                 {
-                    World.foodPheromones.Add(new Pheromone(position));
+                    if (World.foodPheromones[x, y].Count >= World.maxPheromonesPerPartition)
+                        World.foodPheromones[x, y].RemoveAt(0);
+
+                    World.foodPheromones[x, y].Add(new Pheromone(position));
                 }
                 else
                 {
-                    World.homePheromones.Add(new Pheromone(position));
+                    if (World.homePheromones[x, y].Count >= World.maxPheromonesPerPartition)
+                        World.homePheromones[x, y].RemoveAt(0);
+
+                    World.homePheromones[x, y].Add(new Pheromone(position));
                 }
 
                 lastPheromonePosition = position;
@@ -156,44 +180,61 @@ namespace Antoids
 
         private void SmellPheromones()
         {
-            List<Pheromone> pheromones = hasFood ? World.homePheromones : World.foodPheromones;
+            List<Pheromone>[,] pheromones = hasFood ? World.homePheromones : World.foodPheromones;
 
             float[] sensorValues = new float[3];
 
             for (int i = -1; i <= 1; i++)
             {
                 float angle = rotation + i * sensorAngle;
-                float x = (float)Math.Cos(angle);
-                float y = (float)Math.Sin(angle);
-                Vector2 offset = new Vector2(x, y) * sensorDistance;
+                float xOffset = (float)Math.Cos(angle);
+                float yOffset = (float)Math.Sin(angle);
+                Vector2 offset = new Vector2(xOffset, yOffset) * sensorDistance;
 
                 Vector2 sensorPosition = position + offset;
 
-                foreach (Pheromone pheromone in pheromones)
+                sensPoses[i + 1] = sensorPosition;
+
+                int inPaX = (int)((position.X + 1.0f) / 2.0f);
+                int inPaY = (int)((position.Y + 1.0f) / 2.0f);
+
+                for (int x = inPaX - 1; x <= inPaX + 1; x++)
                 {
-                    if (Vector2.Distance(sensorPosition, pheromone.position) < sensorRadius)
+                    if (x < 0 || x >= World.partitionsX)
+                        continue;
+
+                    for (int y = inPaY - 1; y < inPaY + 1; y++)
                     {
-                        sensorValues[i + 1] += pheromone.strength / Pheromone.maxStength;
+                        if (y < 0 || y >= World.partitionsY) 
+                            continue;
+
+                        foreach (Pheromone pheromone in pheromones[x, y])
+                        {
+                            if (Vector2.Distance(sensorPosition, pheromone.position) < sensorRadius)
+                            {
+                                sensorValues[i + 1] += pheromone.strength;
+                            }
+                        }
                     }
                 }
             }
 
             if (sensorValues[1] > Math.Max(sensorValues[0], sensorValues[2]))
             {
-                desiredDirection.X += (float)Math.Cos(rotation) * sensorValues[1];
-                desiredDirection.Y += (float)Math.Sin(rotation) * sensorValues[1];
+                desiredDirection.X += (float)Math.Cos(rotation);
+                desiredDirection.Y += (float)Math.Sin(rotation);
             }
             else if (sensorValues[0] > sensorValues[2])
             {
                 float steerAngle = rotation - (float)Math.PI / 2.0f;
-                desiredDirection.X += (float)Math.Cos(steerAngle) * sensorValues[0];
-                desiredDirection.Y += (float)Math.Sin(steerAngle) * sensorValues[0];
+                desiredDirection.X += (float)Math.Cos(steerAngle);
+                desiredDirection.Y += (float)Math.Sin(steerAngle);
             }
             else if (sensorValues[2] > sensorValues[0])
             {
                 float steerAngle = rotation + (float)Math.PI / 2.0f;
-                desiredDirection.X += (float)Math.Cos(steerAngle) * sensorValues[2];
-                desiredDirection.Y += (float)Math.Sin(steerAngle) * sensorValues[2];
+                desiredDirection.X += (float)Math.Cos(steerAngle);
+                desiredDirection.Y += (float)Math.Sin(steerAngle);
             }
         }
 
@@ -208,13 +249,14 @@ namespace Antoids
 
                 Vector2 sensorPosition = position + offset;
 
-                if (World.terrain.GetValueAtPoint(sensorPosition) > 0.0f)
+                if (Terrain.GetValueAtPoint(sensorPosition.X, sensorPosition.Y) > 0.0f)
                 {
-                    float steerAngle = rotation - i * (float)Math.PI / 4.0f;
+                    float steerAngle = rotation - i * (float)Math.PI / 2.0f;
                     desiredDirection.X = (float)Math.Cos(steerAngle);
                     desiredDirection.Y = (float)Math.Sin(steerAngle);
 
-                    velocity *= 0.9f;
+                    velocity += desiredDirection * 0.5f;
+                    velocity *= 0.90f;
                 }
             }
         }
@@ -237,6 +279,11 @@ namespace Antoids
             if (hasFood)
             {
                 World.DrawCircle(spriteBatch, position, Color.YellowGreen, 0.15f);
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                //World.DrawCircle(spriteBatch, sensPoses[i], Color.Black * 0.4f, sensorRadius * 2.0f);
             }
         }
     }
