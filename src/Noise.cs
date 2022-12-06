@@ -26,10 +26,10 @@ namespace Antoids
             float a3 = Smooth((int)x,     (int)y + 1);
             float a4 = Smooth((int)x + 1, (int)y + 1);
 
-            float interpX1 = MathHelper.InterpolateCosine(a1, a2, x - (int)x);
-            float interpX2 = MathHelper.InterpolateCosine(a3, a4, x - (int)x);
+            float interpX1 = MathHelper.Cerp(a1, a2, x - (int)x);
+            float interpX2 = MathHelper.Cerp(a3, a4, x - (int)x);
 
-            float interp = MathHelper.InterpolateCosine(interpX1, interpX2, y - (int)y);
+            float interp = MathHelper.Cerp(interpX1, interpX2, y - (int)y);
 
             return interp * amplitude;
         }

@@ -22,7 +22,7 @@ namespace Antoids
 
     public class Ant
     {
-        public static Texture2D texture;
+        public static Texture2D antTexture;
 
         private const float maxSpeed = 2.5f;
         private const float steerStrength = 2.5f;
@@ -32,9 +32,9 @@ namespace Antoids
         private const float nestViewRange = 4.0f;
         private const float pickUpRange = 0.15f;
 
-        private const float sensorRadius = 0.1f;
+        private const float sensorRadius = 0.25f;
         private const float sensorDistance = 1.8f;
-        private const float sensorAngle = (float)Math.PI / 9.0f;
+        private const float sensorAngle = (float)Math.PI / 10.0f;
 
         public Vector2 position;
         private Vector2 velocity;
@@ -43,6 +43,7 @@ namespace Antoids
 
         private Food targetFood;
         private bool hasFood;
+        private Color foodColor;
 
         private const float pheromoneSpacing = 0.6f;
         private Vector2 lastPheromonePosition;
@@ -101,6 +102,8 @@ namespace Antoids
 
         private void FindFood()
         {
+            targetFood = null;
+
             float distance = float.PositiveInfinity;
             foreach (Food food in World.foods)
             {
@@ -111,6 +114,7 @@ namespace Antoids
                 {
                     distance = dist;
                     targetFood = food;
+                    foodColor = targetFood.color;
                 }
             }
 
@@ -148,7 +152,7 @@ namespace Antoids
                 {
                     hasFood = false;
                     desiredDirection = -desiredDirection;
-                    velocity = Vector2.Zero;
+                    velocity = -velocity * 0.5f;
                 }
             }
         }
@@ -265,25 +269,29 @@ namespace Antoids
         {
             spriteBatch.Draw
             (
-                texture,
+                antTexture,
                 position * Simulation.windowScale,
-                texture.Bounds,
+                antTexture.Bounds,
                 Color.White,
                 rotation,
-                new Vector2(texture.Width / 2, texture.Height / 2),
-                0.4f * Simulation.windowScale / texture.Width,
+                new Vector2(antTexture.Width / 2, antTexture.Height / 2),
+                0.4f * Simulation.windowScale / antTexture.Width,
                 SpriteEffects.None,
                 0.0f
             );
 
             if (hasFood)
             {
-                World.DrawCircle(spriteBatch, position, Color.YellowGreen, 0.15f);
+                Vector2 forward;
+                forward.X = (float)Math.Cos(rotation);
+                forward.Y = (float)Math.Sin(rotation);
+
+                Simulation.DrawCircle(spriteBatch, position + forward * 0.15f, foodColor, 0.15f);
             }
 
             for (int i = 0; i < 3; i++)
             {
-                //World.DrawCircle(spriteBatch, sensPoses[i], Color.Black * 0.4f, sensorRadius * 2.0f);
+                //Simulation.DrawCircle(spriteBatch, sensPoses[i], Color.Black * 0.4f, sensorRadius * 2.0f);
             }
         }
     }

@@ -6,8 +6,10 @@
   <SourceFiles>
     <File>C:/Users/melvi/Documents/GitHub/IndaPlus/melvinbe-task-12/res/ant.png</File>
     <File>C:/Users/melvi/Documents/GitHub/IndaPlus/melvinbe-task-12/res/circle.png</File>
+    <File>C:/Users/melvi/Documents/GitHub/IndaPlus/melvinbe-task-12/res/cursor.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>

@@ -12,16 +12,16 @@ namespace Antoids
     {
         public Vector2 position;
         public bool willBeRemoved;
-        public Food(Vector2 _position)
+        public Color color;
+        public Food(Vector2 _position, Color color)
         {
             position = _position;
+            this.color = color;
         }
     }
 
     public static class World
     {
-        public static Texture2D circleTexture;
-
         public const float worldWidth = 40.0f;
         public const float worldHeight = 24.0f;
 
@@ -35,10 +35,8 @@ namespace Antoids
         public static List<Pheromone>[,] foodPheromones = new List<Pheromone>[partitionsX, partitionsY];
         public static List<Pheromone>[,] homePheromones = new List<Pheromone>[partitionsX, partitionsY];
 
-        //public static List<Pheromone> foodPheromones = new List<Pheromone>();
-        //public static List<Pheromone> homePheromones = new List<Pheromone>();
-
         private const int antCount = 200;
+
         public static Vector2 nestPosition = new Vector2(worldWidth / 2, worldHeight / 2);
 
         public static void Init()
@@ -46,16 +44,6 @@ namespace Antoids
             for (int i = 0; i < antCount; i++)
             {
                 ants.Add(new Ant(nestPosition + MathHelper.RandomInsideUnitCircle() * 0.5f, MathHelper.RandomInsideUnitCircle()));
-            }
-
-            Random random = new Random();
-            for (int i = 0; i < 500; i++)
-            {
-                Vector2 foodPosition = new Vector2((float)random.NextDouble() * 2.5f + 7.0f, (float)random.NextDouble() * 2.5f + 5.0f);
-                foods.Add(new Food(foodPosition));
-
-                foodPosition = new Vector2(worldWidth - (float)random.NextDouble() * 2.5f - 7.0f, worldHeight - (float)random.NextDouble() * 2.5f - 5.0f);
-                foods.Add(new Food(foodPosition));
             }
 
             for (int x = 0; x < partitionsX; x++)
@@ -106,21 +94,24 @@ namespace Antoids
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            for (int x = 0; x < partitionsX; x++)
+            if (Simulation.showPheromones)
             {
-                for (int y = 0; y < partitionsY; y++)
+                for (int x = 0; x < partitionsX; x++)
                 {
-                    foreach (Pheromone pheromone in foodPheromones[x, y])
+                    for (int y = 0; y < partitionsY; y++)
                     {
-                        float alpha = pheromone.strength / Pheromone.maxStength;
-                        Color color = Color.IndianRed * alpha;
-                        DrawCircle(spriteBatch, pheromone.position, color, 0.1f);
-                    }
-                    foreach (Pheromone pheromone in homePheromones[x, y])
-                    {
-                        float alpha = pheromone.strength / Pheromone.maxStength;
-                        Color color = Color.CornflowerBlue * alpha;
-                        DrawCircle(spriteBatch, pheromone.position, color, 0.1f);
+                        foreach (Pheromone pheromone in foodPheromones[x, y])
+                        {
+                            float alpha = pheromone.strength / Pheromone.maxStength;
+                            Color color = Simulation.foodPheromoneColor * alpha;
+                            Simulation.DrawCircle(spriteBatch, pheromone.position, color, 0.1f);
+                        }
+                        foreach (Pheromone pheromone in homePheromones[x, y])
+                        {
+                            float alpha = pheromone.strength / Pheromone.maxStength;
+                            Color color = Simulation.homePheromoneColor * alpha;
+                            Simulation.DrawCircle(spriteBatch, pheromone.position, color, 0.1f);
+                        }
                     }
                 }
             }
@@ -132,26 +123,10 @@ namespace Antoids
 
             foreach (Food food in foods)
             {
-                DrawCircle(spriteBatch, food.position, Color.YellowGreen, 0.15f);
+                Simulation.DrawCircle(spriteBatch, food.position, food.color, 0.15f);
             }
 
-            DrawCircle(spriteBatch, nestPosition, Color.Brown, 2.0f);
-        }
-
-        public static void DrawCircle(SpriteBatch spriteBatch, Vector2 position, Color color, float scale)
-        {
-            spriteBatch.Draw
-            (
-                circleTexture,
-                position * Simulation.windowScale,
-                circleTexture.Bounds,
-                color,
-                0.0f,
-                new Vector2(circleTexture.Width / 2, circleTexture.Height / 2),
-                scale * Simulation.windowScale / World.circleTexture.Width,
-                SpriteEffects.None,
-                0.0f
-            );
+            Simulation.DrawCircle(spriteBatch, nestPosition, Simulation.nestColor, 2.0f);
         }
     }
 }

@@ -29,7 +29,14 @@ namespace Antoids
             return v * (float)f;
         }
 
-        public static float InterpolateCosine(float a, float b, float x)
+        // Linear Interpolation
+        public static float Lerp(float a, float b, float x)
+        {
+            return a * (1 - x) + b * x;
+        }
+
+        // Cosine Interpolation
+        public static float Cerp(float a, float b, float x)
         {
             float f = (1.0f - (float)Math.Cos(x * (float)Math.PI)) / 2.0f;
             return a * (1.0f - f) + b * f;

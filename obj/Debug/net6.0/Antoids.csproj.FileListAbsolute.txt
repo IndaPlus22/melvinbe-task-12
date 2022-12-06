@@ -51,3 +51,4 @@ C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoi
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoids.genruntimeconfig.cache
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\ref\Antoids.dll
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\circle.xnb
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\cursor.xnb
