@@ -31,20 +31,27 @@ namespace Antoids
 
         public const int partitionsX = 20;
         public const int partitionsY = 12;
-        public const int maxPheromonesPerPartition = 60;
+        public const int maxPheromonesPerPartition = 70;
         public static List<Pheromone>[,] foodPheromones = new List<Pheromone>[partitionsX, partitionsY];
         public static List<Pheromone>[,] homePheromones = new List<Pheromone>[partitionsX, partitionsY];
 
-        private const int antCount = 200;
+        private const int antCount = 250;
 
-        public static Vector2 nestPosition = new Vector2(worldWidth / 2, worldHeight / 2);
+        public static Vector2 nestPosition;
+        public const float nestRadius = 1.0f;
 
         public static void Init()
         {
-            for (int i = 0; i < antCount; i++)
-            {
-                ants.Add(new Ant(nestPosition + MathHelper.RandomInsideUnitCircle() * 0.5f, MathHelper.RandomInsideUnitCircle()));
-            }
+            Brush.MoveNest(new Vector2(worldWidth / 2.0f, worldHeight / 2.0f));
+
+            Clean();
+        }
+
+        public static void Clean()
+        {
+            ants = new List<Ant>();
+
+            foods = new List<Food>();
 
             for (int x = 0; x < partitionsX; x++)
             {
@@ -58,6 +65,11 @@ namespace Antoids
 
         public static void Update(float deltaTime)
         {
+            while (ants.Count < antCount)
+            {
+                ants.Add(new Ant(nestPosition + MathHelper.RandomInsideUnitCircle() * 0.5f, MathHelper.RandomInsideUnitCircle()));
+            }
+
             foreach (Ant ant in ants)
             {
                 ant.Update(deltaTime);
@@ -126,7 +138,7 @@ namespace Antoids
                 Simulation.DrawCircle(spriteBatch, food.position, food.color, 0.15f);
             }
 
-            Simulation.DrawCircle(spriteBatch, nestPosition, Simulation.nestColor, 2.0f);
+            Simulation.DrawCircle(spriteBatch, nestPosition, Simulation.nestColor, nestRadius * 2.0f);
         }
     }
 }

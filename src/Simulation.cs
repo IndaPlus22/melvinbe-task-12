@@ -25,6 +25,13 @@ namespace Antoids
         public static Color homePheromoneColor = Color.IndianRed;
         public static Color nestColor = Color.Brown;
 
+        public static bool simulating = false;
+        private static bool pressedSpace;
+
+        private static bool pressedC;
+
+        private static bool pressedR;
+
         public static bool showPheromones = true;
         private static bool pressedP;
 
@@ -41,9 +48,9 @@ namespace Antoids
 
         protected override void Initialize()
         {
-            World.Init();
-
             Terrain.Init(GraphicsDevice);
+
+            World.Init();
 
             base.Initialize();
         }
@@ -62,6 +69,36 @@ namespace Antoids
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !pressedSpace)
+            {
+                simulating = !simulating;
+                pressedSpace = true;
+            }
+            if (Keyboard.GetState().IsKeyUp(Keys.Space))
+                pressedSpace = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && !pressedR)
+            {
+                simulating = false;
+                Terrain.GenerateGridValues();
+                Terrain.GenerateVertices();
+                World.Clean();
+                Brush.MoveNest(World.nestPosition);
+
+                pressedR = true;
+            }
+            if (Keyboard.GetState().IsKeyUp(Keys.R))
+                pressedR = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.C) && !pressedC)
+            {
+                simulating = false;
+                World.Clean();
+                pressedC = true;
+            }
+            if (Keyboard.GetState().IsKeyUp(Keys.C))
+                pressedC = false;
+
             if (Keyboard.GetState().IsKeyDown(Keys.P) && !pressedP)
             {
                 showPheromones = !showPheromones;
@@ -74,7 +111,7 @@ namespace Antoids
 
             Brush.Update(deltaTime);
 
-            World.Update(deltaTime);
+            if (simulating) World.Update(deltaTime);
 
             base.Update(gameTime);
         }

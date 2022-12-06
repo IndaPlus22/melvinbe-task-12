@@ -40,7 +40,7 @@ namespace Antoids
                 x == (int)(Terrain.gridWidth * frequency) ||
                 y == 0 ||
                 y == (int)(Terrain.gridHeight * frequency)) 
-                return 1.0f;
+                return 1.25f;
 
             int n = (x * 1619 + y * 31337 * 1013 * seed) & 0x7fffffff;
             n = (n << 13) ^ n;

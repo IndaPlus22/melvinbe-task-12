@@ -13,7 +13,7 @@ namespace Antoids
 
         private static Noise perlinNoise;
 
-        private const int cellsPerUnit = 5;
+        public const int cellsPerUnit = 5;
         public const int gridWidth = (int)World.worldWidth * cellsPerUnit;
         public const int gridHeight = (int)World.worldHeight * cellsPerUnit;
         private const float cwos = 1.0f / gridWidth;
@@ -23,7 +23,7 @@ namespace Antoids
         private const float amplitude = 100.0f;
 
         public const float surfaceLevel = 10;
-        private static float[,] values = new float[gridWidth, gridHeight];
+        public static float[,] values = new float[gridWidth, gridHeight];
 
         private static GraphicsDevice graphicsDevice;
 
@@ -48,7 +48,7 @@ namespace Antoids
             GenerateVertices();
         }
 
-        private static void GenerateGridValues()
+        public static void GenerateGridValues()
         {
             int seed = random.Next(100000);
 
@@ -136,12 +136,12 @@ namespace Antoids
                 new VertexPositionTexture(new Vector3(-cwos,  chos, 0.0f), new Vector2(1.0f, 1.0f)), // Left Top
             },
             new List<VertexPositionTexture> { // 10
-                new VertexPositionTexture(new Vector3(-cwos,  0.0f, 0.0f), new Vector2(0.0f, 0.0f)), // Left
-                new VertexPositionTexture(new Vector3( 0.0f,  chos, 0.0f), new Vector2(1.0f, 0.0f)), // Top 
-                new VertexPositionTexture(new Vector3(-cwos,  chos, 0.0f), new Vector2(0.0f, 1.0f)), // Left Top
                 new VertexPositionTexture(new Vector3( cwos,  0.0f, 0.0f), new Vector2(0.0f, 0.0f)), // Right
                 new VertexPositionTexture(new Vector3( 0.0f, -chos, 0.0f), new Vector2(1.0f, 0.0f)), // Bottom 
                 new VertexPositionTexture(new Vector3( cwos, -chos, 0.0f), new Vector2(0.0f, 1.0f)), // Right Bottom
+                new VertexPositionTexture(new Vector3(-cwos,  0.0f, 0.0f), new Vector2(0.0f, 0.0f)), // Left
+                new VertexPositionTexture(new Vector3( 0.0f,  chos, 0.0f), new Vector2(1.0f, 0.0f)), // Top 
+                new VertexPositionTexture(new Vector3(-cwos,  chos, 0.0f), new Vector2(0.0f, 1.0f)), // Left Top
             },
             new List<VertexPositionTexture> { // 11
                 new VertexPositionTexture(new Vector3( cwos,  0.0f, 0.0f), new Vector2(0.0f, 0.0f)), // Right
@@ -190,7 +190,7 @@ namespace Antoids
             new List<int> { 0, 1, 2, 3, 1, 0, 3, 4, 1 }, // 7
             new List<int> { 0, 2, 1                   }, // 8
             new List<int> { 0, 1, 2, 1, 3, 2          }, // 9
-            new List<int> { 0, 2, 1, 1, 3, 2          }, // 10
+            new List<int> { 0, 2, 1, 3, 5, 4          }, // 10
             new List<int> { 0, 2, 1, 3, 0, 1, 3, 1, 4 }, // 11
             new List<int> { 0, 1, 2, 1, 3, 2          }, // 12
             new List<int> { 0, 1, 2, 3, 1, 0, 3, 4, 1 }, // 13 
@@ -198,7 +198,7 @@ namespace Antoids
             new List<int> { 0, 2, 1, 1, 2, 3          }, // 15
         };
 
-        private static void GenerateVertices()
+        public static void GenerateVertices()
         {
             List<VertexPositionTexture> verts = new List<VertexPositionTexture>();
             List<int> inds = new List<int>();
