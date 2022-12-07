@@ -11,6 +11,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Icon.ico" />
     <Content Include="Icon.bmp" />
   </ItemGroup>

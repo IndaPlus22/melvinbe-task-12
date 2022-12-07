@@ -27,7 +27,7 @@ namespace Antoids
         public Vector2 position;
 
         // How long a pheromone lasts for in seconds
-        public const float maxStength = 20.0f;
+        public const float maxStength = 18.0f;
         public float strength = maxStength;
 
         public Pheromone(Vector2 position)

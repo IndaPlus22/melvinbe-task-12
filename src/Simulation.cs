@@ -18,7 +18,7 @@ namespace Antoids
 
         // Some color values that can be changed globally from here:
         public static Color groundColor        = new Color(98, 77, 66, 255);
-        public static Color terrainColor          = new Color(64, 52, 54, 255);
+        public static Color terrainColor       = new Color(64, 52, 54, 255);
         public static Color foodColor1         =     Color.YellowGreen;
         public static Color foodColor2         =     Color.GreenYellow;
         public static Color foodPheromoneColor =     Color.YellowGreen;
