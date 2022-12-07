@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>C:/Users/melvi/Documents/GitHub/IndaPlus/melvinbe-task-12/res/ant.png</SourceFile>
-  <SourceTime>2022-12-03T14:22:22.6158344+01:00</SourceTime>
+  <SourceTime>2022-12-06T20:40:21.0102941+01:00</SourceTime>
   <DestFile>C:/Users/melvi/Documents/GitHub/IndaPlus/melvinbe-task-12/res/bin/DesktopGL/Content/ant.xnb</DestFile>
-  <DestTime>2022-12-03T14:22:28.6594773+01:00</DestTime>
+  <DestTime>2022-12-06T20:40:23.8817903+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2022-07-26T13:44:56+02:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

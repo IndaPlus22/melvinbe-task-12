@@ -34,12 +34,10 @@ namespace Antoids
 
         public static void Update(float deltaTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.D1))
-                placingFood = false;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D2))
-                placingFood = true;
-
+            if (Simulation.keyboardState.IsKeyDown(Keys.Tab) && Simulation.lastKeyboardState.IsKeyUp(Keys.Tab))
+            {
+                placingFood = !placingFood;
+            }
 
             MouseState state = Mouse.GetState();
 
@@ -66,7 +64,9 @@ namespace Antoids
 
             if (movingNest)
             {
-                MoveNest(mousePosition);
+                World.nestPosition = mousePosition;
+
+                CleanNest();
 
                 return;
             }
@@ -110,10 +110,8 @@ namespace Antoids
             }
         }
 
-        public static void MoveNest(Vector2 position)
+        public static void CleanNest()
         {
-            World.nestPosition = position;
-
             RemoveDirt(World.nestPosition, World.nestRadius * 1.25f);
         }
 
@@ -130,11 +128,11 @@ namespace Antoids
                 for (int y = 2; y < Terrain.gridHeight - 2; y++)
                 {
                     Vector2 cellPosition = new Vector2(x, y) + Vector2.One * 0.5f;
-                    Vector2 mouseCellPosition = mousePosition * Terrain.cellsPerUnit;
+                    Vector2 mouseCellPosition = mousePosition * Terrain.cellsPerWorldUnit;
 
                     float distance = Vector2.Distance(cellPosition, mouseCellPosition) * 0.85f;
 
-                    if (distance < brushRadius * Terrain.cellsPerUnit)
+                    if (distance < brushRadius * Terrain.cellsPerWorldUnit)
                     {
                         Terrain.values[x, y] = Math.Max(Terrain.values[x, y], 5.0f - (distance * 1.25f / brushRadius));
 
@@ -160,11 +158,11 @@ namespace Antoids
                 for (int y = 2; y < Terrain.gridHeight - 2; y++)
                 {
                     Vector2 cellPosition = new Vector2(x, y) + Vector2.One * 0.5f;
-                    Vector2 mouseCellPosition = position * Terrain.cellsPerUnit;
+                    Vector2 mouseCellPosition = position * Terrain.cellsPerWorldUnit;
 
                     float distance = Vector2.Distance(cellPosition, mouseCellPosition) * 0.85f;
 
-                    if (distance < radius * Terrain.cellsPerUnit)
+                    if (distance < radius * Terrain.cellsPerWorldUnit)
                     {
                         Terrain.values[x, y] = Math.Min(Terrain.values[x, y], -5.0f + (distance * 1.25f / radius));
 
@@ -186,7 +184,7 @@ namespace Antoids
                 Vector2 foodPosition = mousePosition + MathHelper.RandomInsideUnitCircle() * brushRadius;
                 Color foodColor = Color.Lerp(Simulation.foodColor1, Simulation.foodColor2, (float)random.NextDouble());
 
-                if (Terrain.GetValueAtPoint(foodPosition.X, foodPosition.Y) <= 0.0f)
+                if (Terrain.GetValueAtWorldPoint(foodPosition.X, foodPosition.Y) <= 0.0f)
                 {
                     World.foods.Add(new Food(foodPosition, foodColor));
                 }
@@ -212,12 +210,12 @@ namespace Antoids
             spriteBatch.Draw
             (
                 cursorTexture,
-                mousePosition * Simulation.windowScale,
+                mousePosition * Simulation.pixelsPerWorldUnit,
                 cursorTexture.Bounds,
-                (placingFood ? Color.GreenYellow : Color.Black) * 0.3f,
+                (placingFood ? Simulation.brushColorFood : Simulation.brushColorDirt) * 0.7f,
                 0.0f,
                 new Vector2(cursorTexture.Width / 2, cursorTexture.Height / 2),
-                brushRadius * 2.0f * Simulation.windowScale / cursorTexture.Width,
+                brushRadius * 2.0f * Simulation.pixelsPerWorldUnit / cursorTexture.Width,
                 SpriteEffects.None,
                 0.0f
             );

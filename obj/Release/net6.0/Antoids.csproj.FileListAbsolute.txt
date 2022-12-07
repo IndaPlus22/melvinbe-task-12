@@ -25,3 +25,6 @@ C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\ref
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\Antoids.pdb
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\Antoids.genruntimeconfig.cache
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\ref\Antoids.dll
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Release\net6.0\res\cursor.xnb
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\Antoids.Properties.Resources.resources
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Release\net6.0\Antoids.csproj.GenerateResource.cache

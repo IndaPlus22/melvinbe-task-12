@@ -7,13 +7,17 @@ using System.Diagnostics;
 
 namespace Antoids
 {
+    // A helper class with various functions that I could not fit anywhere else
     public static class MathHelper
     {
         private static Random random = new Random();
 
+        // Returns any random vector with magnitude less than 1
         public static Vector2 RandomInsideUnitCircle()
         {
+            // Get any random angle
             double angle = random.NextDouble() * 2.0 * Math.PI;
+            // Get a random distance from 0 to 1
             double radius = Math.Sqrt(random.NextDouble());
 
             double x = radius * Math.Cos(angle);
@@ -22,6 +26,7 @@ namespace Antoids
             return new Vector2((float)x, (float)y);
         }
 
+        // Limit magnitude of vector
         public static Vector2 ClampNorm(Vector2 v, float max)
         {
             double f = Math.Min(v.Length(), max);
@@ -38,8 +43,8 @@ namespace Antoids
         // Cosine Interpolation
         public static float Cerp(float a, float b, float x)
         {
-            float f = (1.0f - (float)Math.Cos(x * (float)Math.PI)) / 2.0f;
-            return a * (1.0f - f) + b * f;
+            double f = (1.0 - Math.Cos(x * Math.PI)) / 2.0;
+            return a * (1.0f - (float)f) + b * (float)f;
         }
     }
 }

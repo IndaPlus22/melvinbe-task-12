@@ -9,31 +9,37 @@ namespace Antoids
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-        public const float windowScale = 60.0f;
-        public const int windowWidth = (int)(World.worldWidth * windowScale);
-        public const int windowHeight = (int)(World.worldHeight * windowScale);
+        private static Texture2D circleTexture;
 
-        public static Texture2D circleTexture;
+        // Information about the game window:
+        public const float pixelsPerWorldUnit = 60.0f;
+        public const int windowWidth = (int)(World.worldWidth * pixelsPerWorldUnit);
+        public const int windowHeight = (int)(World.worldHeight * pixelsPerWorldUnit);
 
-        public static Color groundColor = new Color(98, 77, 66, 255);
-        public static Color wallColor =   new Color(64, 52, 54, 255);
-        public static Color foodColor1 = Color.YellowGreen;
-        public static Color foodColor2 = Color.GreenYellow;
-        //public static Color foodPheromoneColor = Color.IndianRed;
-        //public static Color homePheromoneColor = Color.CornflowerBlue;
-        public static Color foodPheromoneColor = Color.YellowGreen;
-        public static Color homePheromoneColor = Color.IndianRed;
-        public static Color nestColor = Color.Brown;
+        // Some color values that can be changed globally from here:
+        public static Color groundColor        = new Color(98, 77, 66, 255);
+        public static Color terrainColor          = new Color(64, 52, 54, 255);
+        public static Color foodColor1         =     Color.YellowGreen;
+        public static Color foodColor2         =     Color.GreenYellow;
+        public static Color foodPheromoneColor =     Color.YellowGreen;
+        public static Color homePheromoneColor =     Color.IndianRed;
+        public static Color nestColor1         = new Color(102, 57, 49, 255);
+        public static Color nestColor2         = new Color(143, 86, 59, 255);
+        public static Color brushColorDirt     = new Color(30, 25, 25, 255);
+        public static Color brushColorFood     =     Color.YellowGreen;
 
+        // Keep track of current and last state to detect any changes
+        public static KeyboardState keyboardState;
+        public static KeyboardState lastKeyboardState;
+
+        // Is the simulation running?
         public static bool simulating = false;
-        private static bool pressedSpace;
 
-        private static bool pressedC;
+        // Run at double speed
+        private static bool doubleSpeed;
 
-        private static bool pressedR;
-
+        // Enable rendering of pheromones
         public static bool showPheromones = true;
-        private static bool pressedP;
 
         public Simulation()
         {
@@ -41,6 +47,7 @@ namespace Antoids
             Content.RootDirectory = "res";
             IsMouseVisible = true;
 
+            // Set window size
             graphics.PreferredBackBufferWidth = windowWidth;
             graphics.PreferredBackBufferHeight = windowHeight;
             graphics.ApplyChanges();
@@ -50,7 +57,7 @@ namespace Antoids
         {
             Terrain.Init(GraphicsDevice);
 
-            World.Init();
+            World.Clean();
 
             base.Initialize();
         }
@@ -59,6 +66,7 @@ namespace Antoids
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            // Load textures:
             circleTexture = Content.Load<Texture2D>("circle");
             Ant.antTexture = Content.Load<Texture2D>("ant");
             Brush.cursorTexture = Content.Load<Texture2D>("cursor");
@@ -66,52 +74,53 @@ namespace Antoids
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            // Save last state and update current
+            lastKeyboardState = keyboardState;
+            keyboardState = Keyboard.GetState();
+
+            // Close application when pressing escape
+            if (keyboardState.IsKeyDown(Keys.Escape) && lastKeyboardState.IsKeyUp(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !pressedSpace)
-            {
+            // Toggle simulation properties:
+            if (keyboardState.IsKeyDown(Keys.Space) && lastKeyboardState.IsKeyUp(Keys.Space))
                 simulating = !simulating;
-                pressedSpace = true;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.Space))
-                pressedSpace = false;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) && !pressedR)
+            if (keyboardState.IsKeyDown(Keys.Right) && lastKeyboardState.IsKeyUp(Keys.Right))
+                doubleSpeed = !doubleSpeed;
+
+            if (keyboardState.IsKeyDown(Keys.P) && lastKeyboardState.IsKeyUp(Keys.P))
+                showPheromones = !showPheromones;
+
+            // Regenerate terrain, clean world and pause simulation:
+            if (keyboardState.IsKeyDown(Keys.R) && lastKeyboardState.IsKeyUp(Keys.R))
             {
-                simulating = false;
                 Terrain.GenerateGridValues();
                 Terrain.GenerateVertices();
                 World.Clean();
-                Brush.MoveNest(World.nestPosition);
+                simulating = false;
 
-                pressedR = true;
+                // Remove dirt around nest that may have generated
+                Brush.CleanNest(); 
             }
-            if (Keyboard.GetState().IsKeyUp(Keys.R))
-                pressedR = false;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.C) && !pressedC)
+            // Clean world and pause simulation
+            if (keyboardState.IsKeyDown(Keys.C) && lastKeyboardState.IsKeyUp(Keys.C))
             {
                 simulating = false;
                 World.Clean();
-                pressedC = true;
             }
-            if (Keyboard.GetState().IsKeyUp(Keys.C))
-                pressedC = false;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.P) && !pressedP)
-            {
-                showPheromones = !showPheromones;
-                pressedP = true;
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.P))
-                pressedP = false;
-
+            // Get time that passed since last frame
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // Multiply by two if running att double speed
+            if (doubleSpeed) deltaTime *= 2.0f; 
 
-            Brush.Update(deltaTime);
+            // Update brush even when paused to allow editing
+            Brush.Update(deltaTime); 
 
-            if (simulating) World.Update(deltaTime);
+            // Don't update world if simulation is paused
+            if (simulating) World.Update(deltaTime); 
 
             base.Update(gameTime);
         }
@@ -120,14 +129,17 @@ namespace Antoids
         {
             GraphicsDevice.Clear(groundColor);
 
+            // Draw world in spritebatch:
             spriteBatch.Begin();
 
             World.Draw(spriteBatch);
 
             spriteBatch.End();
 
-            Terrain.Draw(spriteBatch);
+            // Draw terrain mesh seperatly because it is a "user indexed primitive"
+            Terrain.Draw();
 
+            // Draw brush last (on top) 
             spriteBatch.Begin();
 
             Brush.Draw(spriteBatch);
@@ -137,17 +149,18 @@ namespace Antoids
             base.Draw(gameTime);
         }
 
+        // A general function for drawing circles
         public static void DrawCircle(SpriteBatch spriteBatch, Vector2 position, Color color, float scale)
         {
             spriteBatch.Draw
             (
                 circleTexture,
-                position * windowScale,
+                position * pixelsPerWorldUnit,
                 circleTexture.Bounds,
                 color,
                 0.0f,
                 new Vector2(circleTexture.Width / 2, circleTexture.Height / 2),
-                scale * windowScale / circleTexture.Width,
+                scale * pixelsPerWorldUnit / circleTexture.Width,
                 SpriteEffects.None,
                 0.0f
             );

@@ -25,6 +25,8 @@ C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\Antoids\obj\Debug\net6
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\Antoids\obj\Debug\net6.0\ref\Antoids.dll
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\Antoids\bin\Debug\net6.0\res\ant.xnb
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\ant.xnb
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\circle.xnb
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\cursor.xnb
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\Antoids.exe
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\Antoids.deps.json
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\Antoids.runtimeconfig.json
@@ -50,5 +52,5 @@ C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\refin
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoids.pdb
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoids.genruntimeconfig.cache
 C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\ref\Antoids.dll
-C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\circle.xnb
-C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\bin\Debug\net6.0\res\cursor.xnb
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoids.Properties.Resources.resources
+C:\Users\melvi\Documents\GitHub\IndaPlus\melvinbe-task-12\obj\Debug\net6.0\Antoids.csproj.GenerateResource.cache
