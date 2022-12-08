@@ -24,9 +24,9 @@ namespace Antoids
         private const float pickUpRange = 0.15f;
 
         // Pheromone sensor settings:
-        private const float sensorRadius = 0.2f;
-        private const float sensorDistance = 1.8f;
-        private const float sensorAngle = (float)Math.PI / 10.0f;
+        private const float sensorRadius = 0.4f;
+        private const float sensorDistance = 1.4f;
+        private const float sensorAngle = (float)Math.PI / 12.0f;
 
         // Movement variables:
         public Vector2 position;
@@ -45,7 +45,7 @@ namespace Antoids
         private Vector2 lastPheromonePosition;
 
         // Save sensor positions for debugging purposes
-        //private Vector2[] sensPoses = new Vector2[3];
+        private Vector2[] sensPoses = new Vector2[3];
 
         public Ant(Vector2 position, Vector2 velocity)
         {
@@ -217,7 +217,7 @@ namespace Antoids
                 Vector2 sensorPosition = position + offset;
 
                 // Save sensor position for debugging purposes
-                //sensPoses[i + 1] = sensorPosition;
+                sensPoses[i + 1] = sensorPosition;
 
                 // Find partition ant is in
                 int inPaX = (int)((position.X + 1.0f) / (World.worldWidth / World.partitionsX));
