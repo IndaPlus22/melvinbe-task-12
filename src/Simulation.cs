@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Reflection.Metadata;
 
 namespace Antoids
 {
@@ -12,9 +13,10 @@ namespace Antoids
         private static Texture2D circleTexture;
 
         // Information about the game window:
-        public const float pixelsPerWorldUnit = 60.0f;
-        public const int windowWidth = (int)(World.worldWidth * pixelsPerWorldUnit);
-        public const int windowHeight = (int)(World.worldHeight * pixelsPerWorldUnit);
+        private const float windowFraction = 0.70f; // The window should make up 70 % of screen width. Useful if you don't know resolution of screen you are presenting on
+        public static float pixelsPerWorldUnit = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width * windowFraction / World.worldWidth;
+        public static int windowWidth = (int)(World.worldWidth * pixelsPerWorldUnit);
+        public static int windowHeight = (int)(World.worldHeight * pixelsPerWorldUnit);
 
         // Some color values that can be changed globally from here:
         public static Color groundColor        = new Color(98, 77, 66, 255);

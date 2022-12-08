@@ -239,6 +239,9 @@ namespace Antoids
                     food.willBeRemoved = true;
                 }
             }
+
+            // Force food cleanup in case game is paused
+            World.foods = World.foods.Where(food => !food.willBeRemoved).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
