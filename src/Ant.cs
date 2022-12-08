@@ -45,7 +45,7 @@ namespace Antoids
         private Vector2 lastPheromonePosition;
 
         // Save sensor positions for debugging purposes
-        private Vector2[] sensPoses = new Vector2[3];
+        //private Vector2[] sensPoses = new Vector2[3];
 
         public Ant(Vector2 position, Vector2 velocity)
         {
@@ -170,6 +170,10 @@ namespace Antoids
                 // Select partition based on position
                 int x = (int)(position.X * World.partitionsX / World.worldWidth);
                 int y = (int)(position.Y * World.partitionsY / World.worldHeight);
+                // Make sure position is within partition arrays
+                if (x < 0 || x >= World.partitionsX ||
+                    y < 0 || y >= World.partitionsY)
+                    return;
 
                 // Select pheromone type
                 if (hasFood)
@@ -213,7 +217,7 @@ namespace Antoids
                 Vector2 sensorPosition = position + offset;
 
                 // Save sensor position for debugging purposes
-                sensPoses[i + 1] = sensorPosition;
+                //sensPoses[i + 1] = sensorPosition;
 
                 // Find partition ant is in
                 int inPaX = (int)((position.X + 1.0f) / (World.worldWidth / World.partitionsX));
@@ -331,10 +335,12 @@ namespace Antoids
             }
 
             // Draw sensors to debug:
+            /*
             for (int i = 0; i < 3; i++)
             {
-                //Simulation.DrawCircle(spriteBatch, sensPoses[i], Color.Black * 0.4f, sensorRadius * 2.0f);
+                Simulation.DrawCircle(spriteBatch, sensPoses[i], Color.Black * 0.4f, sensorRadius * 2.0f);
             }
+            //*/
         }
     }
 }
